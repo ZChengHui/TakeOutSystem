@@ -20,23 +20,70 @@
   <div class="dashboard-container" id="member-app">
     <div class="container">
       <div class="tableBar">
-        <el-input
-          v-model="input"
-          placeholder="请输入员工姓名"
-          style="width: 250px"
-          clearable
-           @keyup.enter.native="handleQuery"
-        >
+        <div class="myDivContainer">
+          <div class="myDivBox">
+          <el-input
+                v-model="name"
+                placeholder="请输入员工姓名"
+                style="width: 250px"
+                clearable
+          >
+          </el-input>
+          <el-input
+                  v-model="username"
+                  placeholder="请输入员工账号"
+                  style="width: 250px;margin-top: 5px"
+                  clearable
+          >
+          </el-input>
+          </div>
+          <div class="myDivBox">
+          <el-input
+                  v-model="phone"
+                  placeholder="请输入员工电话"
+                  style="width: 250px"
+                  clearable
+          >
+          </el-input>
+          <el-input
+                  v-model="idNumber"
+                  placeholder="请输入员工身份证"
+                  style="width: 250px;margin-top: 5px"
+                  clearable
+          >
+          </el-input>
+          </div>
+          <div class="myDivBox">
+          <el-select v-model="sex" clearable placeholder="请选择员工性别">
+            <el-option
+                    v-for="item in sexs"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select v-model="status" clearable placeholder="请选择员工状态" style="margin-top: 5px">
+            <el-option
+                    v-for="item in statues"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+          </div>
           <i
-            slot="prefix"
-            class="el-input__icon el-icon-search"
-            style="cursor: pointer"
-            @click="handleQuery"
-          ></i>
-        </el-input>
+                  slot="prefix"
+                  class="el-input__icon el-icon-search"
+                  style="cursor: pointer;width: 10%;"
+                  @click="handleQuery"
+            >
+          </i>
+        </div>
+
         <el-button
           type="primary"
           @click="addMemberHandle('add')"
+          style="margin-top:1.5%;height: 50%;"
         >
           + 添加员工
         </el-button>
@@ -58,9 +105,18 @@
           prop="phone"
           label="手机号"
         ></el-table-column>
+        <el-table-column
+                prop="idNumber"
+                label="身份证号"
+        ></el-table-column>
+        <el-table-column label="性别">
+          <template slot-scope="scope">
+            {{ String(scope.row.sex) === '0' ? '女' : '男' }}
+          </template>
+        </el-table-column>
         <el-table-column label="账号状态">
           <template slot-scope="scope">
-            {{ String(scope.row.status) === '0' ? '已禁用' : '正常' }}
+            {{ String(scope.row.status) === '0' ? '禁用' : '正常' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -75,6 +131,7 @@
               class="blueBug"
               @click="addMemberHandle(scope.row.id)"
               :class="{notAdmin:user !== 'admin'}"
+              v-if="user === 'admin'"
             >
               编辑
             </el-button>
@@ -115,13 +172,32 @@
         el: '#member-app',
         data() {
           return {
-             input: '',
+             sexs: [{
+               value: '0',
+               label: '女'
+             }, {
+               value: '1',
+               label: '男'
+             }],
+             sex: '',
+             statues: [{
+               value: '0',
+               label: '禁用'
+             },{
+               value: '1',
+               label: '正常'
+             }],
+             phone: '',
+             idNumber: '',
+             name: '',
+             username: '',
              counts: 0,
-             page: 1,
+             page: 1,//当前页
              pageSize: 10,
              tableData : [],
              id : '',
              status : '',
+             changeStatus : '' //改变状态用这个变量，防止前端渲染冲突
           }
         },
         computed: {},
@@ -136,10 +212,15 @@
             const params = {
               page: this.page,
               pageSize: this.pageSize,
-              name: this.input ? this.input : undefined
+              name: this.name,
+              username: this.username,
+              idNumber: this.idNumber,
+              phone: this.phone,
+              sex: this.sex,
+              status: this.status
             }
             await getMemberList(params).then(res => {
-              if (String(res.code) === '1') {
+              if (res.code == 200) {
                 this.tableData = res.data.records || []
                 this.counts = res.data.total
               }
@@ -170,15 +251,16 @@
           //状态修改
           statusHandle (row) {
             this.id = row.id
-            this.status = row.status
+            this.changeStatus = row.status
             this.$confirm('确认调整该账号的状态?', '提示', {
               'confirmButtonText': '确定',
               'cancelButtonText': '取消',
               'type': 'warning'
               }).then(() => {
-              enableOrDisableEmployee({ 'id': this.id, 'status': !this.status ? 1 : 0 }).then(res => {
-                console.log('enableOrDisableEmployee',res)
-                if (String(res.code) === '1') {
+                console.log(this.id + " " + this.status)
+              enableOrDisableEmployee({ 'id': this.id, 'status': !this.changeStatus ? 1 : 0 }).then(res => {
+                //console.log('enableOrDisableEmployee',res)
+                if (res.code == 200) {
                   this.$message.success('账号状态更改成功！')
                   this.handleQuery()
                 }

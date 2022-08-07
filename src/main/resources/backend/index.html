@@ -182,12 +182,14 @@
         methods: {
           logout() {
             logoutApi().then((res)=>{
-              if(res.code === 1){
+              if(res.code == 200){
                 localStorage.removeItem('userInfo')
                 this.$message.success(res.data)
                 setTimeout(function (){
                   window.location.href = '/backend/page/login/login.html'
                 },1000)
+              } else {
+                this.$message.error("系统异常，登出失败")
               }
             })
           },

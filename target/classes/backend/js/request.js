@@ -44,9 +44,10 @@
 
   // 响应拦截器
   service.interceptors.response.use(res => {
-      console.log('---响应拦截器---', res)
-      console.log(res.data.code)
-      console.log(res.data.msg)
+      // console.log('---响应拦截器---', res)
+      // console.log(res.data.code)
+      // console.log(res.data.msg)
+      //废除这段功能函数
       if (res.data.code === 0 && res.data.msg === 'NOTLOGIN') {// 返回登录页面
         console.log('---/backend/page/login/login.html---')
         localStorage.removeItem('userInfo')

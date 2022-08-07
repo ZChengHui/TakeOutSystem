@@ -1,7 +1,5 @@
-package com.to.reggie.filter;
+package com.to.reggie.interceptor;
 
-import com.alibaba.fastjson.JSON;
-import com.to.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -12,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 检查用户是否登录
+ * 废弃过滤器
  */
 @Slf4j
 @WebFilter(filterName = "loginCheckFilter", urlPatterns = "/*")
@@ -60,7 +58,7 @@ public class LoginCheckFilter implements Filter {
         //5.如果未登录，则返回未登录结果，通过输出流方式向客户端页面响应数据
         else {
             log.info("拦截未登录请求：{}", requestURI);
-            response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
+            //response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
             return;
         }
 

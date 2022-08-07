@@ -1,13 +1,16 @@
 package com.to.reggie.common;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
+@NoArgsConstructor
 public class R<T> {
 
-    private Integer code; //编码：1成功，0和其它数字为失败
+    private Integer code; //状态码
 
     private String msg; //错误信息
 
@@ -15,17 +18,19 @@ public class R<T> {
 
     private Map map = new HashMap(); //动态数据
 
-    public static <T> R<T> success(T object) {
-        R<T> r = new R<T>();
-        r.data = object;
-        r.code = 1;
+    private static final Integer OK = 200;
+
+    public static <T> R<T> ex(Integer code, Exception e) {
+        R<T> r = new R<>();
+        r.code = code;
+        r.msg = e.getMessage();
         return r;
     }
 
-    public static <T> R<T> error(String msg) {
-        R r = new R();
-        r.msg = msg;
-        r.code = 0;
+    public static <T> R<T> success(T object) {
+        R<T> r = new R<T>();
+        r.data = object;
+        r.code = OK;
         return r;
     }
 

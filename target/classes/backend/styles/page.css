@@ -1,3 +1,16 @@
+.myDivBox {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+.myDivContainer {
+  display: flex;
+  align-content: space-between;
+}
+.myDiv {
+  margin-top: 5px;
+}
+
 .dashboard-container {
   padding: 20px;
 }

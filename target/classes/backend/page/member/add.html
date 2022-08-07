@@ -143,13 +143,13 @@
           async init () {
             queryEmployeeById(this.id).then(res => {
               console.log(res)
-              if (String(res.code) === '1') {
+              if (res.code == 200) {
                 console.log(res.data)
                 this.ruleForm = res.data
                 this.ruleForm.sex = res.data.sex === '0' ? '女' : '男'
                 // this.ruleForm.password = ''
               } else {
-                this.$message.error(res.msg || '操作失败')
+                this.$message.error(res.msg)
               }
             })
           },
@@ -162,11 +162,14 @@
                     sex: this.ruleForm.sex === '女' ? '0' : '1'
                   }
                   addEmployee(params).then(res => {
-                    if (res.code === 1) {
-                      this.$message.success('员工添加成功！')
+                    if (res.code == 200) {
+                      //请求成功
+                      this.$message.success(res.data)
+                      //只保存
                       if (!st) {
                         this.goBack()
                       } else {
+                        //继续添加
                         this.ruleForm = {
                           username: '',
                           'name': '',
@@ -178,7 +181,7 @@
                         }
                       }
                     } else {
-                      this.$message.error(res.msg || '操作失败')
+                      this.$message.error(res.msg)
                     }
                   }).catch(err => {
                     this.$message.error('请求出错了：' + err)
@@ -189,28 +192,30 @@
                     sex: this.ruleForm.sex === '女' ? '0' : '1'
                   }
                   editEmployee(params).then(res => {
-                    if (res.code === 1) {
-                      this.$message.success('员工信息修改成功！')
+                    if (res.code == 200) {
+                      this.$message.success(res.data)
                       this.goBack()
                     } else {
-                      this.$message.error(res.msg || '操作失败')
+                      this.$message.error(res.msg)
                     }
                   }).catch(err => {
                     this.$message.error('请求出错了：' + err)
                   })
                 }
               } else {
-                console.log('error submit!!')
+                this.$message.error("错误格式提交")
                 return false
               }
             })
           },
           goBack(){
-            window.parent.menuHandle({
-              id: '2',
-              url: '/backend/page/member/list.html',
-              name: '员工管理'
-            },false)
+            setTimeout(()=>{
+              window.parent.menuHandle({
+                id: '2',
+                url: '/backend/page/member/list.html',
+                name: '员工管理'
+              },false)
+            },1000)
           }
         }
       })
