@@ -29,6 +29,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         messageConverter.setObjectMapper(new JacksonObjectMapper());
         //追加到mvc框架消息转换器容器中
         converters.add(0,messageConverter);
+
     }
 
     @Override
@@ -36,6 +37,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         log.info("开启拦截器");
         //创建自定义拦截器对象
         HandlerInterceptor interceptor = new LoginInterceptor();
+
         //配置黑名单
         List<String> patterns = new ArrayList<>();
         patterns.add("/backend/page/category/**");

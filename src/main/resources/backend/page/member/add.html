@@ -66,7 +66,7 @@
         </el-form-item>
         <div class="subBox address">
           <el-form-item>
-            <el-button  @click="goBack()">
+            <el-button  @click="cancelOperation()">
               取消
             </el-button>
             <el-button
@@ -216,6 +216,10 @@
                 name: '员工管理'
               },false)
             },1000)
+          },
+          cancelOperation() {
+            this.$message.info("当前操作取消")
+            this.goBack()
           }
         }
       })

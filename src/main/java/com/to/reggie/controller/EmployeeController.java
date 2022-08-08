@@ -65,7 +65,7 @@ public class EmployeeController extends BaseController {
     public R<IPage<Employee>> getEmployeeList(int page, int pageSize, Employee employee) {
 
         //后段链接前端传值//log.info("####page:{},pageSize:{},name:{},username:{}",page,pageSize,employee.getName(),employee.getUsername());
-        IPage iPage = iEmployeeService.getEmployeeList(page, pageSize, employee);
+        IPage<Employee> iPage = iEmployeeService.getEmployeeList(page, pageSize, employee);
         // 当前页大于最大页 取小的值
         if (page > iPage.getPages()) {
             iPage = iEmployeeService.getEmployeeList((int)iPage.getPages(), pageSize, employee);

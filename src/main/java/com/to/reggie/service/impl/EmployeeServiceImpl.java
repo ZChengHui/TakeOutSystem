@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.to.reggie.common.BaseContext;
 import com.to.reggie.entity.Employee;
 import com.to.reggie.mapper.IEmployeeMapper;
 import com.to.reggie.service.IEmployeeService;
@@ -80,14 +81,15 @@ public class EmployeeServiceImpl extends ServiceImpl<IEmployeeMapper, Employee> 
         String pwd = DigestUtils.md5DigestAsHex(IdNumberSub.substring(len-6).getBytes());
         employee.setPassword(pwd);
 
-        //设置初始字段值
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
+        //填充初始字段值
+        //employee.setCreateTime(LocalDateTime.now());
+        //employee.setUpdateTime(LocalDateTime.now());
 
         //操作者的id
-        employee.setCreateUser(operationId);
-        employee.setUpdateUser(operationId);
+        //employee.setCreateUser(operationId);
+        //employee.setUpdateUser(operationId);
         //log.info(employee.toString());
+        BaseContext.setCurrentId(operationId);
 
         //执行插入
         int rows = iEmployeeMapper.insert(employee);
@@ -120,7 +122,7 @@ public class EmployeeServiceImpl extends ServiceImpl<IEmployeeMapper, Employee> 
 
         //按日期等等
 
-        IPage page = new Page(cur, size);
+        IPage<Employee> page = new Page(cur, size);
         iEmployeeMapper.selectPage(page, queryWrapper);
         return page;
     }
@@ -130,20 +132,31 @@ public class EmployeeServiceImpl extends ServiceImpl<IEmployeeMapper, Employee> 
      * @param employee
      */
     @Override
-    public void update(@RequestBody Employee employee, Long operationId) {
+    public void update(Employee employee, Long operationId) {
 
 
         //判断重复记录
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Employee::getUsername, employee.getUsername());
         Employee temp = iEmployeeMapper.selectOne(queryWrapper);
-        if (temp != null) {
+        Employee temp_ = iEmployeeMapper.selectById(employee.getId());
+        //log.info(String.valueOf((temp.getId()==temp_.getId())));
+        if (temp != null && !temp_.getId().equals(temp.getId())) {
             //用户已存在
             throw new UsernameDuplicatedException("账号已存在");
         }
 
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(operationId);
+        //填充字段
+        //employee.setUpdateTime(LocalDateTime.now());
+        //employee.setUpdateUser(operationId);
+
+        //利用线程维护同一执行流上的局部变量
+        //Long id = Thread.currentThread().getId();
+        //log.info("线程ID={}",id);
+        //log.info("当前登录用户ID={}",operationId);
+        BaseContext.setCurrentId(operationId);
+
+
         int rows = iEmployeeMapper.updateById(employee);
         if (rows != 1) {
             throw new UpdateException("修改时产生未知异常");

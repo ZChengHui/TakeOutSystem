@@ -11,7 +11,8 @@ function requestUrlParam(argname){
   {
       var loc = arrStr[i].indexOf(argname+"=")
       if(loc!=-1){
-          return arrStr[i].replace(argname+"=","").replace("?","")
+          var result = arrStr[i].replace(argname+"=","").replace("?","")
+          return result
       }
   }
   return ""
