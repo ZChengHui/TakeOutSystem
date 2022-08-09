@@ -165,7 +165,7 @@
               name: this.input ? this.input : undefined
             }
             await getDishPage(params).then(res => {
-              if (String(res.code) === '1') {
+              if (res.code == 200) {
                 this.tableData = res.data.records || []
                 this.counts = res.data.total
               }

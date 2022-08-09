@@ -336,7 +336,7 @@
           async init () {
             queryDishById(this.id).then(res => {
               console.log(res)
-              if (String(res.code) === '1') {
+              if (res.code == 200) {
                 this.ruleForm = { ...res.data }
                 this.ruleForm.price = String(res.data.price/100)
                 this.ruleForm.status = res.data.status == '1'
@@ -390,10 +390,10 @@
           // 获取菜品分类
           getDishList () {
             getCategoryList({ 'type': 1 }).then(res => {
-              if (res.code === 1) {
+              if (res.code == 200) {
                 this.dishList = res.data
               } else {
-                this.$message.error(res.msg || '操作失败')
+                this.$message.error(res.msg)
               }
             })
           },
@@ -460,8 +460,8 @@
                 if (this.actionType == 'add') {
                   delete params.id
                   addDish(params).then(res => {
-                    if (res.code === 1) {
-                      this.$message.success('菜品添加成功！')
+                    if (res.code == 200) {
+                      this.$message.success(res.data)
                       if (!st) {
                         this.goBack()
                       } else {
@@ -489,8 +489,8 @@
                 } else {
                   delete params.updateTime
                   editDish(params).then(res => {
-                    if (res.code === 1) {
-                      this.$message.success('菜品修改成功！')
+                    if (res.code == 200) {
+                      this.$message.success(res.data)
                       this.goBack()
                     } else {
                       this.$message.error(res.msg || '操作失败')
@@ -533,11 +533,13 @@
           },
           
           goBack(){
-            window.parent.menuHandle({
-              id: '4',
-              url: '/backend/page/food/list.html',
-              name: '菜品管理'
-            },false)
+            setTimeout(()=>{
+              window.parent.menuHandle({
+                id: '4',
+                url: '/backend/page/food/list.html',
+                name: '菜品管理'
+              },false)
+            },1000)
           }
         }
       })

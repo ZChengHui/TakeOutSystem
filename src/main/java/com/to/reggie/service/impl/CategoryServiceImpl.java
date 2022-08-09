@@ -17,6 +17,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CategoryServiceImpl extends ServiceImpl<ICategoryMapper, Category> implements ICategoryService {
 
@@ -62,7 +64,7 @@ public class CategoryServiceImpl extends ServiceImpl<ICategoryMapper, Category> 
      * @return
      */
     @Override
-    public IPage<Category> getCategoryList(int cur, int pageSize, Category category) {
+    public IPage<Category> getCategoryPage(int cur, int pageSize, Category category) {
 
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Strings.isNotEmpty(category.getName()), Category::getName, category.getName());
@@ -129,6 +131,27 @@ public class CategoryServiceImpl extends ServiceImpl<ICategoryMapper, Category> 
             throw new UpdateException("修改时产生未知异常");
         }
 
+    }
+
+    /**
+     * 查询分类列表
+     * @param category
+     * @return
+     */
+    @Override
+    public List<Category> getCategoryList(Category category) {
+        //条件
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(category.getType()!=null, Category::getType, category.getType());
+        queryWrapper.orderByAsc(Category::getSort);
+        queryWrapper.orderByDesc(Category::getUpdateTime);
+
+        //查询
+        List<Category> list = iCategoryMapper.selectList(queryWrapper);
+        if (list == null) {
+            throw new CategoryNotFoundException("当前无分类类别，请添加分类");
+        }
+        return list;
     }
 
 }

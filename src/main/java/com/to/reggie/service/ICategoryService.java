@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.to.reggie.entity.Category;
 
+import java.util.List;
+
 public interface ICategoryService extends IService<Category> {
 
     /**
@@ -20,7 +22,7 @@ public interface ICategoryService extends IService<Category> {
      * @param category
      * @return
      */
-    IPage<Category> getCategoryList(int cur, int pageSize, Category category);
+    IPage<Category> getCategoryPage(int cur, int pageSize, Category category);
 
     /**
      * 根据ID删除菜品套餐分类
@@ -34,4 +36,11 @@ public interface ICategoryService extends IService<Category> {
      * @param operationId
      */
     void editCategory(Category category, Long operationId);
+
+    /**
+     * 查询分类列表
+     * @param category
+     * @return
+     */
+    List<Category> getCategoryList(Category category);
 }

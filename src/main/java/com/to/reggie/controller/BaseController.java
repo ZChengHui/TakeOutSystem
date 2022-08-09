@@ -1,6 +1,7 @@
 package com.to.reggie.controller;
 
 import com.to.reggie.common.R;
+import com.to.reggie.controller.ex.*;
 import com.to.reggie.service.ex.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +29,11 @@ public class BaseController {
         hashMap.put(DeleteException.class, R.ex(4007, e));
         hashMap.put(CategoryDuplicatedException.class, R.ex(4008, e));
 
+        hashMap.put(FileEmptyException.class, R.ex(5001, e));
+        hashMap.put(FileStateException.class, R.ex(5002, e));
+        hashMap.put(FileTransferException.class, R.ex(5003, e));
+        hashMap.put(FileSizeException.class, R.ex(5004, e));
+        hashMap.put(FileTypeException.class, R.ex(5005, e));
 
         if (hashMap.get(e.getClass()) != null) {
             return hashMap.get(e.getClass());

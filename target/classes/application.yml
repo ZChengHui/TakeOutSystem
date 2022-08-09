@@ -19,3 +19,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: ASSIGN_ID #主键生成策略
+
+#文件上传地址映射
+fileIO:
+  path: D:\take-out-file\img\

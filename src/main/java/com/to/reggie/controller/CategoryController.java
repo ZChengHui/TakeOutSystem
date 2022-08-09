@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -40,8 +41,8 @@ public class CategoryController extends BaseController{
      */
     //@RequestParam（”“）映射前端json变量 ===> java 变量
     @GetMapping("/page")
-    public R<IPage<Category>> getCategoryList(@RequestParam("page") int cur, @RequestParam("pageSize") int pageSize, Category category) {
-        IPage<Category> iPage = iCategoryService.getCategoryList(cur, pageSize, category);
+    public R<IPage<Category>> getCategoryPage(@RequestParam("page") int cur, @RequestParam("pageSize") int pageSize, Category category) {
+        IPage<Category> iPage = iCategoryService.getCategoryPage(cur, pageSize, category);
         return R.success(iPage);
     }
 
@@ -70,5 +71,15 @@ public class CategoryController extends BaseController{
         return R.success("修改成功");
     }
 
+    /**
+     * 查询分类列表
+     * @param category
+     * @return
+     */
+    @GetMapping("/list")
+    public R<List<Category>> getCategoryList(Category category) {
+        List<Category> list = iCategoryService.getCategoryList(category);
+        return R.success(list);
+    }
 
 }
