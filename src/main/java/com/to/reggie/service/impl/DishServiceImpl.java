@@ -13,16 +13,25 @@ import com.to.reggie.mapper.IDishMapper;
 import com.to.reggie.service.ICategoryService;
 import com.to.reggie.service.IDishFlavorService;
 import com.to.reggie.service.IDishService;
+import com.to.reggie.service.ex.DishNameDuplicatedException;
+import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class DishServiceImpl extends ServiceImpl<IDishMapper, Dish> implements IDishService {
+
+    //映射路径
+    @Value("${fileIO.path}")
+    private String basePath;
 
     @Autowired
     private IDishFlavorService iDishFlavorService;
@@ -34,6 +43,72 @@ public class DishServiceImpl extends ServiceImpl<IDishMapper, Dish> implements I
     private ICategoryService iCategoryService;
 
     /**
+     * 批量删除
+     * 多表操作
+     * @param ids
+     */
+    @Override
+    @Transactional
+    public void deleteBach(List<Long> ids) {
+
+        //判断
+        List<Dish> dishList = this.listByIds(ids);
+        Boolean flag = true;
+        for (Dish dish : dishList) {
+            if (dish.getStatus() == 1) {
+                flag = false;
+                break;
+            }
+        }
+        if (!flag) {
+            throw new SetmealCanNotUpdateException("菜品正在销售不可删除");
+        }
+
+        //获取图片名
+        List<String> imgList = new ArrayList<>();
+        for (Dish dish : dishList) {
+            imgList.add(dish.getImage());
+        }
+
+        //删除图片
+        for (String fileName : imgList) {
+            File file = new File(basePath + fileName);
+            file.delete();
+        }
+
+        //删除dish
+        this.removeByIds(ids);
+
+        //删除dish_flavor
+        LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(DishFlavor::getDishId, ids);
+        iDishFlavorService.remove(queryWrapper);
+
+    }
+
+    /**
+     * 批量修改菜品状态
+     * @param state
+     * @param ids
+     * @param operationId
+     */
+    @Override
+    public void updateStatus(int state, List<Long> ids, Long operationId) {
+        //线程传值
+        BaseContext.setCurrentId(operationId);
+
+        //查找实体列表
+        List<Dish> dishList = this.listByIds(ids);
+
+        //更新状态 赋值
+        for (Dish dish : dishList) {
+            dish.setStatus(state);
+        }
+
+        this.updateBatchById(dishList);
+    }
+
+    /**
      * 更新菜品及对应口味
      * 多表操作
      * @param dishDto
@@ -42,6 +117,14 @@ public class DishServiceImpl extends ServiceImpl<IDishMapper, Dish> implements I
     @Override
     @Transactional
     public void updateWithFlavor(DishDto dishDto, Long operationId) {
+        //查重
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Dish::getName, dishDto.getName());
+        Dish temp = iDishMapper.selectOne(queryWrapper);
+        Dish temp_ = iDishMapper.selectById(dishDto.getId());
+        if (temp != null && !temp_.getId().equals(temp.getId())) {
+            throw new DishNameDuplicatedException("菜品名称重复");
+        }
 
         //填充，利用线程传值
         BaseContext.setCurrentId(operationId);
@@ -50,9 +133,9 @@ public class DishServiceImpl extends ServiceImpl<IDishMapper, Dish> implements I
         this.updateById(dishDto);
 
         //删除原来的口味
-        LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(DishFlavor::getDishId, dishDto.getId());
-        iDishFlavorService.remove(queryWrapper);
+        LambdaQueryWrapper<DishFlavor> queryWrapper_ = new LambdaQueryWrapper<>();
+        queryWrapper_.eq(DishFlavor::getDishId, dishDto.getId());
+        iDishFlavorService.remove(queryWrapper_);
 
         //添加现在的口味，赋值预处理
         Long dishId = dishDto.getId();
@@ -95,6 +178,14 @@ public class DishServiceImpl extends ServiceImpl<IDishMapper, Dish> implements I
     @Override
     @Transactional//开启数据库事务，启动类也要加事务注解
     public void saveWithFlavor(DishDto dishDto, Long operationId) {
+        //查重
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Dish::getName, dishDto.getName());
+        int counts = iDishMapper.selectCount(queryWrapper);
+        if (counts != 0) {
+            throw new DishNameDuplicatedException("菜品名称重复");
+        }
+
         //填充，利用线程传值
         BaseContext.setCurrentId(operationId);
 
@@ -151,7 +242,7 @@ public class DishServiceImpl extends ServiceImpl<IDishMapper, Dish> implements I
 
                 dishDto.setCategoryName(categoryName);
             }
-                return dishDto;
+            return dishDto;
 
         }).collect(Collectors.toList());
 

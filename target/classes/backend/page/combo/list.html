@@ -14,20 +14,38 @@
    <div class="dashboard-container" id="combo-app">
     <div class="container">
       <div class="tableBar">
-        <el-input
-          v-model="input"
-          placeholder="请输入套餐名称"
-          style="width: 250px"
-          clearable
-          @keyup.enter.native="handleQuery"
-        >
+        <div class="myDivContainer">
+          <el-input
+                  v-model="query.name"
+                  placeholder="请输入菜品名称"
+                  style="width: 250px"
+                  clearable
+                  @keyup.enter.native="handleQuery"
+          >
+          </el-input>
+          <el-select
+                  v-model="query.categoryId"
+                  clearable
+                  placeholder="请选择套餐分类"
+                  style="margin-left: 5px;margin-right: 5px"
+          >
+            <el-option v-for="(item,index) in setMealList" :key="index" :label="item.name" :value="item.id" />
+          </el-select>
+          <el-select v-model="query.status" clearable placeholder="请选择菜品状态" >
+            <el-option
+                    v-for="item in query.statues"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
           <i
-            slot="prefix"
-            class="el-input__icon el-icon-search"
-            style="cursor: pointer"
-            @click="init"
+                  slot="prefix"
+                  class="el-input__icon el-icon-search"
+                  style="cursor: pointer"
+                  @click="init"
           ></i>
-        </el-input>
+        </div>
         <div class="tableLab">
           <span class="span-btn delBut non" @click="deleteHandle('批量')">批量删除</span>
           <span class="span-btn blueBug non" @click="statusHandle('1')">批量启售</span>
@@ -50,9 +68,10 @@
         class="tableBox"
         @selection-change="handleSelectionChange"
       >
+        <!--防止候选按钮偏移-->
         <el-table-column
           type="selection"
-          width="25"
+          width="100%"
         ></el-table-column>
         <el-table-column
           prop="name"
@@ -142,6 +161,7 @@
     <script src="../../plugins/axios/axios.min.js"></script>
     <script src="../../js/request.js"></script>
     <script src="../../api/combo.js"></script>
+    <script src="../../api/food.js"></script>
     <script>
       new Vue({
         el: '#combo-app',
@@ -153,7 +173,21 @@
              pageSize: 10,
              tableData : [],
              dishState : '',
-             checkList: []
+             checkList: [],
+
+             setMealList: [],
+             query: {
+              name: '',
+              categoryId: '',
+              status: '',
+              statues: [{
+                value: '1',
+                label: '起售'
+              },{
+                value: '0',
+                label: '停售'
+              }]
+            }
           }
         },
         computed: {},
@@ -167,12 +201,15 @@
             const params = {
               page: this.page,
               pageSize: this.pageSize,
-              name: this.input ? this.input : undefined
+              name: this.query.name,
+              categoryId: this.query.categoryId,
+              status: this.query.status
             }
             await getSetmealPage(params).then(res => {
-              if (String(res.code) === '1') {
+              if (res.code === 200) {
                 this.tableData = res.data.records || []
                 this.counts = res.data.total
+                this.getSetMealList()
               }
             }).catch(err => {
               this.$message.error('请求出错了：' + err)
@@ -185,6 +222,19 @@
             this.page = 1;
             this.init();
           },
+
+          // 获取菜品分类
+          getSetMealList () {
+            getCategoryList({ 'type': 2 }).then(res => {
+              if (res.code == 200) {
+                this.setMealList = res.data
+              } else {
+                this.$message.error("wrnm" + res.msg)
+              }
+            })
+          },
+
+
           // 添加
           addSetMeal (st) {
             if (st === 'add'){
@@ -214,8 +264,8 @@
               'cancelButtonText': '取消',
             }).then(() => {
               deleteSetmeal(type === '批量' ? this.checkList.join(',') : id).then(res => {
-                if (res.code === 1) {
-                  this.$message.success('删除成功！')
+                if (res.code == 200) {
+                  this.$message.success(res.data)
                   this.handleQuery()
                 } else {
                   this.$message.error(res.msg || '操作失败')
@@ -247,8 +297,8 @@
             }).then(() => {
               // 起售停售---批量起售停售接口
               setmealStatusByStatus(params).then(res => {
-                if (res.code === 1) {
-                  this.$message.success('套餐状态已经更改成功！')
+                if (res.code == 200) {
+                  this.$message.success(res.data)
                   this.handleQuery()
                 } else {
                   this.$message.error(res.msg || '操作失败')

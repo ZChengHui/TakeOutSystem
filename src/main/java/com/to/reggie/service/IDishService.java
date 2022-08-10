@@ -5,7 +5,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.to.reggie.dto.DishDto;
 import com.to.reggie.entity.Dish;
 
+import java.util.List;
+
 public interface IDishService extends IService<Dish> {
+
+    //批量删除 多表操作
+    void deleteBach(List<Long> ids);
+
+    //批量修改状态
+    void updateStatus(int state, List<Long> ids, Long operationId);
 
     //更新菜品及对应口味
     void updateWithFlavor(DishDto dishDto, Long operationId);

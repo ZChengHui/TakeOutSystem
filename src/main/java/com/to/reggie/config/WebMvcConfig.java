@@ -38,6 +38,27 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         //创建自定义拦截器对象
         HandlerInterceptor interceptor = new LoginInterceptor();
 
+
+        /** 白名单
+         * "/employee/login",
+         *                 "/employee/logout",
+         *                 "/backend/**",
+         *                 "/front/**",
+         *                 "/common/**",
+         *                 "/user/sendMsg",
+         *                 "/user/login"
+         */
+        //配置白名单
+//        List<String> patterns = new ArrayList<>();
+//        patterns.add("/employee/login");
+//        patterns.add("/employee/logout");
+//        patterns.add("/backend/**");
+//        patterns.add("/front/**");
+//        patterns.add("/common/**");
+//        patterns.add("/user/sendMsg");
+//        patterns.add("/user/login");
+//        patterns.add("/error");
+
         //配置黑名单
         List<String> patterns = new ArrayList<>();
         patterns.add("/backend/page/category/**");
@@ -46,7 +67,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         patterns.add("/backend/page/member/**");
         patterns.add("/backend/page/order/**");
         patterns.add("/backend/index.html");
-
 
         patterns.add("/front/index.html");
         patterns.add("/front/page/add-order.html");
@@ -73,6 +93,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         log.info("开始静态资源映射");
         //地址映射 classpath即resources路径
         registry.addResourceHandler("/backend/**").addResourceLocations("classpath:/backend/");
-        registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front");
+        registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front/");
     }
 }

@@ -28,6 +28,9 @@ public class BaseController {
         hashMap.put(ForeignKeyConstraintException.class, R.ex(4006, e));
         hashMap.put(DeleteException.class, R.ex(4007, e));
         hashMap.put(CategoryDuplicatedException.class, R.ex(4008, e));
+        hashMap.put(DishNameDuplicatedException.class, R.ex(4009, e));
+        hashMap.put(SetmealDuplicationException.class, R.ex(40010, e));
+        hashMap.put(SetmealCanNotUpdateException.class, R.ex(4011, e));
 
         hashMap.put(FileEmptyException.class, R.ex(5001, e));
         hashMap.put(FileStateException.class, R.ex(5002, e));

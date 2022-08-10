@@ -480,7 +480,7 @@
           // 获取套餐分类
           getDishTypeList() {
             getCategoryList({ type: 2, page: 1, pageSize: 1000 }).then((res) => {
-              if (res.code === 1) {
+              if (res.code == 200) {
                 this.setMealList = res.data.map((obj) => ({ ...obj, idType: obj.id }))
               } else {
                 this.$message.error(res.msg || '操作失败')
@@ -551,8 +551,8 @@
                   delete prams.id
                   addSetmeal(prams)
                     .then((res) => {
-                      if (res.code === 1) {
-                        this.$message.success('套餐添加成功！')
+                      if (res.code === 200) {
+                        this.$message.success(res.data)
                         if (!st) {
                           this.goBack()
                         } else {
@@ -584,8 +584,8 @@
                   delete prams.updateTime
                   editSetmeal(prams)
                     .then((res) => {
-                      if (res.code === 1) {
-                        this.$message.success('套餐修改成功！')
+                      if (res.code === 200) {
+                        this.$message.success(res.data)
                         this.goBack()
                       } else {
                         this.$message.error(res.msg || '操作失败')
@@ -627,19 +627,21 @@
             }
           },
           goBack() {
-            window.parent.menuHandle(
-              {
-                id: '5',
-                url: '/backend/page/combo/list.html',
-                name: '套餐管理',
-              },
-              false
-            )
+            setTimeout(()=>{
+              window.parent.menuHandle(
+                      {
+                        id: '5',
+                        url: '/backend/page/combo/list.html',
+                        name: '套餐管理',
+                      },
+                      false
+              )
+            },500)
           },
-          // 获取套餐分类
+          // 获取菜品分类
           getDishType () {
             getCategoryList({'type':1}).then(res => {
-              if (res.code === 1) {
+              if (res.code === 200) {
                 this.dishType = res.data
                 this.getDishList(res.data[0].id)
               } else {
@@ -648,10 +650,10 @@
             })
           },
 
-          // 通过套餐ID获取菜品列表分类
+          // 通过菜品分类ID获取菜品列表分类
           getDishList (id) {
-            queryDishList({categoryId: id}).then(res => {
-              if (res.code === 1) {
+            queryDishList({'categoryId': id}).then(res => {
+              if (res.code === 200) {
                 if (res.data.length == 0) {
                   this.dishAddList = []
                   return

@@ -64,9 +64,10 @@
         class="tableBox"
         @selection-change="handleSelectionChange"
       >
+        <!--防止候选按钮偏移-->
         <el-table-column
           type="selection"
-          width="25"
+          width="100%"
         ></el-table-column>
         <el-table-column
           prop="name"
@@ -256,8 +257,8 @@
               'cancelButtonText': '取消',
             }).then(() => {
               deleteDish(type === '批量' ? this.checkList.join(',') : id).then(res => {
-                if (res.code === 1) {
-                  this.$message.success('删除成功！')
+                if (res.code === 200) {
+                  this.$message.success(res.data)
                   this.handleQuery()
                 } else {
                   this.$message.error(res.msg || '操作失败')
@@ -290,8 +291,8 @@
             }).then(() => {
               // 起售停售---批量起售停售接口
               dishStatusByStatus(this.dishState).then(res => {
-                if (res.code === 1) {
-                  this.$message.success('菜品状态已经更改成功！')
+                if (res.code == 200) {
+                  this.$message.success(res.data)
                   this.handleQuery()
                 } else {
                   this.$message.error(res.msg || '操作失败')
