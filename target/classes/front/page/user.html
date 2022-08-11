@@ -133,7 +133,7 @@
                         pageSize:1
                     }
                     const res = await orderPagingApi(params)
-                    if(res.code === 1){
+                    if(res.code == 200){
                         this.order = res.data.records
                         if(this.order && this.order[0].orderDetails){
                             let number = 0
@@ -170,7 +170,7 @@
                 },
                 async addOrderAgain(){
                     const res = await orderAgainApi({id:this.order[0].id})
-                    if(res.code === 1){
+                    if(res.code == 200){
                         window.requestAnimationFrame(()=>{
                             window.location.href = '/front/index.html'
                         }) 
@@ -180,7 +180,7 @@
                 },
                 async toPageLogin(){
                     const res = await loginoutApi()
-                    if(res.code === 1){
+                    if(res.code == 200){
                         window.requestAnimationFrame(()=>{
                             window.location.href = '/front/page/login.html'
                         }) 

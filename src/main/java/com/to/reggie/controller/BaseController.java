@@ -31,6 +31,7 @@ public class BaseController {
         hashMap.put(DishNameDuplicatedException.class, R.ex(4009, e));
         hashMap.put(SetmealDuplicationException.class, R.ex(40010, e));
         hashMap.put(SetmealCanNotUpdateException.class, R.ex(4011, e));
+        hashMap.put(AddressBookNotFoundException.class, R.ex(4012, e));
 
         hashMap.put(FileEmptyException.class, R.ex(5001, e));
         hashMap.put(FileStateException.class, R.ex(5002, e));

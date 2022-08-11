@@ -5,16 +5,22 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.to.reggie.common.R;
 import com.to.reggie.dto.DishDto;
+import com.to.reggie.entity.Category;
 import com.to.reggie.entity.Dish;
+import com.to.reggie.entity.DishFlavor;
 import com.to.reggie.entity.Setmeal;
+import com.to.reggie.service.ICategoryService;
+import com.to.reggie.service.IDishFlavorService;
 import com.to.reggie.service.IDishService;
 import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 菜品管理 菜品口味管理
@@ -27,14 +33,20 @@ public class DishController extends BaseController{
     @Autowired
     private IDishService iDishService;
 
+    @Autowired
+    private IDishFlavorService iDishFlavorService;
+    
+    @Autowired
+    private ICategoryService iCategoryService;
+
     /**
-     * 按菜品分类id查询菜品列表
+     * 按菜品分类id查询菜品列表 DTO版改进
      * 联动加载
      * @param dish
      * @return
      */
     @GetMapping("/list")
-    public R<List<Dish>> getDishByCategoryId(Dish dish) {
+    public R<List<DishDto>> getDishByCategoryId(Dish dish) {
 
         //查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
@@ -44,8 +56,49 @@ public class DishController extends BaseController{
         queryWrapper.orderByDesc(Dish::getUpdateTime);
 
         List<Dish> list = iDishService.list(queryWrapper);
-        return R.success(list);
+
+        List<DishDto> dishDtoList = list.stream().map((item) -> {
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(item, dishDto);
+
+            //设置关联表的分类名 赋值
+            Long categoryId = item.getCategoryId();
+            Category category = iCategoryService.getById(categoryId);
+            if (category != null) {
+                dishDto.setCategoryName(category.getName());
+            }
+            //设置关联表的口味 赋值
+            Long dishId = item.getId();
+            LambdaQueryWrapper<DishFlavor> queryWrapper1 = new LambdaQueryWrapper<>();
+            queryWrapper1.eq(DishFlavor::getDishId, dishId);
+            List<DishFlavor> list1 = iDishFlavorService.list(queryWrapper1);
+            dishDto.setFlavors(list1);
+            
+            return dishDto;
+        }).collect(Collectors.toList());
+
+        return R.success(dishDtoList);
     }
+
+    /**
+     * 按菜品分类id查询菜品列表
+     * 联动加载
+     * @param dish
+     * @return
+     */
+//    @GetMapping("/list")
+//    public R<List<Dish>> getDishByCategoryId(Dish dish) {
+//
+//        //查询条件
+//        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+//        queryWrapper.eq(Dish::getCategoryId, dish.getCategoryId());
+//        queryWrapper.eq(Dish::getStatus, 1);//启售状态
+//        queryWrapper.orderByAsc(Dish::getSort);
+//        queryWrapper.orderByDesc(Dish::getUpdateTime);
+//
+//        List<Dish> list = iDishService.list(queryWrapper);
+//        return R.success(list);
+//    }
 
     /**
      * 新增菜品

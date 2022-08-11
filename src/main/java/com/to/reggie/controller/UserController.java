@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController{
 
     @Autowired
     public IUserService iUserService;
@@ -74,7 +74,7 @@ public class UserController {
                 temp.setPhone(phone);
                 iUserService.save(temp);
             }
-            session.setAttribute("userPhone", temp.getPhone());
+            session.setAttribute("userId", temp.getId());
             return R.success(temp);
         }
         throw new PasswordNotMatchException("用户名或验证码错误，登录失败");

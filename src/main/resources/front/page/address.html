@@ -127,7 +127,7 @@
                     },
                     async initData(){
                         const res = await addressListApi()
-                        if(res.code === 1){
+                        if(res.code == 200){
                             this.addressList = res.data
                         }else{
                             this.$message.error(res.msg)
@@ -136,7 +136,7 @@
                     async setDefaultAddress(item){
                         if(item.id){
                             const res = await setDefaultAddressApi({id:item.id})
-                            if(res.code === 1){
+                            if(res.code == 200){
                             this.initData()
                             }else{
                                 this.$message.error(res.msg)
