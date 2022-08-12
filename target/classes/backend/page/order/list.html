@@ -218,7 +218,7 @@
         methods: {
           async init () {
             getOrderDetailPage({ page: this.page, pageSize: this.pageSize, number: this.input || undefined, beginTime: this.beginTime || undefined, endTime: this.endTime || undefined }).then(res => {
-              if (String(res.code) === '1') {
+              if (res.code == 200) {
                 this.tableData = res.data.records || []
                 this.counts = res.data.total
               }
@@ -266,7 +266,7 @@
                 'type': 'warning'
               }).then(() => {
                 editOrderDetail(params).then(res => {
-                  if (res.code === 1) {
+                  if (res.code == 200) {
                     this.$message.success(status === 3 ? '订单已派送' : '订单已完成')
                     this.init()
                   } else {

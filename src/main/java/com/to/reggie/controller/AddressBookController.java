@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.to.reggie.common.BaseContext;
 import com.to.reggie.common.R;
 import com.to.reggie.entity.AddressBook;
-import com.to.reggie.service.AddressBookService;
+import com.to.reggie.service.IAddressBookService;
 import com.to.reggie.service.ex.AddressBookNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.List;
 public class AddressBookController extends BaseController{
 
     @Autowired
-    private AddressBookService addressBookService;
+    private IAddressBookService addressBookService;
 
     /**
      * 新增
