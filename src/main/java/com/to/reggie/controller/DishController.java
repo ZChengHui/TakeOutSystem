@@ -16,6 +16,8 @@ import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
@@ -51,19 +53,20 @@ public class DishController extends BaseController{
      * @param dish
      * @return
      */
+    @Cacheable(value = "dishCache", key = "#dish.categoryId + '_' + #dish.status")
     @GetMapping("/list")
     public R<List<DishDto>> getDishByCategoryId(Dish dish) {
-        List<DishDto> dishDtoList = null;
-
-        //从redis中获取缓存数据  dish_8374234782_1
-        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
-
-        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
-
-        //如果存在，直接返回，无需查询数据库
-        if (dishDtoList != null) {
-            return R.success(dishDtoList);
-        }
+//        List<DishDto> dishDtoList = null;
+//
+//        //从redis中获取缓存数据  dish_8374234782_1
+//        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
+//
+//        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+//
+//        //如果存在，直接返回，无需查询数据库
+//        if (dishDtoList != null) {
+//            return R.success(dishDtoList);
+//        }
 
         //如果不存在，查询数据库，并添加缓存
         //查询条件
@@ -75,7 +78,7 @@ public class DishController extends BaseController{
 
         List<Dish> list = iDishService.list(queryWrapper);
 
-        dishDtoList = list.stream().map((item) -> {
+        List<DishDto> dishDtoList = list.stream().map((item) -> {
             DishDto dishDto = new DishDto();
             BeanUtils.copyProperties(item, dishDto);
 
@@ -95,8 +98,8 @@ public class DishController extends BaseController{
             return dishDto;
         }).collect(Collectors.toList());
 
-        //加入redis缓存
-        redisTemplate.opsForValue().set(key, dishDtoList, 60, TimeUnit.MINUTES);
+//        //加入redis缓存
+//        redisTemplate.opsForValue().set(key, dishDtoList, 60, TimeUnit.MINUTES);
 
         return R.success(dishDtoList);
     }
@@ -127,6 +130,7 @@ public class DishController extends BaseController{
      * @param dishDto
      * @return
      */
+    @CacheEvict(value = "dishCache", allEntries = true)
     @PostMapping
     public R<String> saveDish(@RequestBody DishDto dishDto, HttpSession session) {//数据传输复杂对象
         Long operationId = (Long) session.getAttribute("employeeId");
@@ -167,6 +171,7 @@ public class DishController extends BaseController{
      * @param session
      * @return
      */
+    @CacheEvict(value = "dishCache", allEntries = true)
     @PutMapping
     public R<String> updateDish(@RequestBody DishDto dishDto, HttpSession session) {
         Long operationId = (Long) session.getAttribute("employeeId");
@@ -186,6 +191,7 @@ public class DishController extends BaseController{
      * @param ids
      * @return
      */
+    @CacheEvict(value = "dishCache", allEntries = true)
     @DeleteMapping
     public R<String> deleteBach(@RequestParam List<Long> ids) {//自动解析前端ids
         //log.info(ids.toString());
@@ -199,6 +205,7 @@ public class DishController extends BaseController{
      * @param ids
      * @return
      */
+    @CacheEvict(value = "dishCache", allEntries = true)
     @PostMapping("/status/{state}")
     public R<String> updateStatus(@PathVariable int state, @RequestParam List<Long> ids, HttpSession session) {
         Long operationId = (Long) session.getAttribute("employeeId");

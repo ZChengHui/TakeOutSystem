@@ -15,6 +15,8 @@ import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,19 +49,21 @@ public class SetmealController extends BaseController{
      * @param setmeal
      * @return
      */
-    @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId + '_' + #setmeal.status")
+    @GetMapping("/list")                   // key对应方法参数
     public R<List<SetmealDto>> getDishByCategoryId(Setmeal setmeal) {
-        List<SetmealDto> setmealDtoList = null;
+//        redis缓存实现思路
+//        List<SetmealDto> setmealDtoList = null;
 
-        //设置套餐关键字
-        String key = "setmeal_" + setmeal.getCategoryId() + "_" + setmeal.getStatus();
+//        //设置套餐关键字
+//        String key = "setmeal_" + setmeal.getCategoryId() + "_" + setmeal.getStatus();
+//
+//        setmealDtoList = (List<SetmealDto>) redisTemplate.opsForValue().get(key);
 
-        setmealDtoList = (List<SetmealDto>) redisTemplate.opsForValue().get(key);
-
-        //如果存在，直接返回，无需查询数据库
-        if (setmealDtoList != null) {
-            return R.success(setmealDtoList);
-        }
+//        //如果存在，直接返回，无需查询数据库
+//        if (setmealDtoList != null) {
+//            return R.success(setmealDtoList);
+//        }
 
         //如果不存在，查询数据库，并添加缓存
         //查询条件
@@ -71,7 +75,7 @@ public class SetmealController extends BaseController{
         List<Setmeal> list = iSetmealService.list(queryWrapper);
 
         //用流遍历
-        setmealDtoList = list.stream().map((item) -> {
+        List<SetmealDto> setmealDtoList = list.stream().map((item) -> {
             SetmealDto setmealDto = new SetmealDto();
 
             BeanUtils.copyProperties(item, setmealDto);
@@ -93,8 +97,8 @@ public class SetmealController extends BaseController{
             return setmealDto;
         }).collect(Collectors.toList());
 
-        //加入redis
-        redisTemplate.opsForValue().set(key, setmealDtoList);
+//        //加入redis
+//        redisTemplate.opsForValue().set(key, setmealDtoList);
 
         return R.success(setmealDtoList);
     }
@@ -124,6 +128,7 @@ public class SetmealController extends BaseController{
      * @param ids
      * @return
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @PostMapping("/status/{state}")
     public R<String> updateStatus(@PathVariable int state, @RequestParam List<Long> ids, HttpSession session) {
         Long operationId = (Long) session.getAttribute("employeeId");
@@ -136,6 +141,7 @@ public class SetmealController extends BaseController{
      * @param ids
      * @return
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @DeleteMapping
     public R<String> deleteBach(@RequestParam List<Long> ids) {
         iSetmealService.deleteBach(ids);
@@ -148,6 +154,7 @@ public class SetmealController extends BaseController{
      * @param session
      * @return
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @PostMapping
     public R<String> save(@RequestBody SetmealDto setmealDto, HttpSession session) {
         Long operationId = (Long) session.getAttribute("employeeId");
@@ -187,15 +194,16 @@ public class SetmealController extends BaseController{
      * @param session
      * @return
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @PutMapping
     public R<String> update(@RequestBody SetmealDto setmealDto, HttpSession session) {
         Long operationId = (Long) session.getAttribute("employeeId");
         iSetmealService.updateWithDish(setmealDto, operationId);
         log.info(setmealDto.toString());
 
-        //清理所有缓存数据
-        Set keys = redisTemplate.keys("setmeal_*");//通配符
-        redisTemplate.delete(keys);//按规则清理
+//        //清理所有缓存数据
+//        Set keys = redisTemplate.keys("setmeal_*");//通配符
+//        redisTemplate.delete(keys);//按规则清理
 
         return R.success("修改菜品成功");
     }
