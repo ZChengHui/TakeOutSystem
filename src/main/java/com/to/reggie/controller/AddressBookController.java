@@ -6,6 +6,7 @@ import com.to.reggie.common.BaseContext;
 import com.to.reggie.common.R;
 import com.to.reggie.entity.AddressBook;
 import com.to.reggie.service.IAddressBookService;
+import com.to.reggie.service.IDistrictService;
 import com.to.reggie.service.ex.AddressBookNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,41 @@ public class AddressBookController extends BaseController{
     @Autowired
     private IAddressBookService addressBookService;
 
+    @Autowired
+    private IDistrictService iDistrictService;
+
+    //修改地址
+    @PutMapping
+    public R<String> update(@RequestBody AddressBook addressBook, HttpSession session) {
+        Long operationId = (Long) session.getAttribute("userId");
+        BaseContext.setCurrentId(operationId);
+        addressBook.setUserId(BaseContext.getCurrentId());
+
+        //省市区信息
+        addressBook.setProvinceName(iDistrictService.getNameByCode(addressBook.getProvinceCode()));
+        addressBook.setCityName(iDistrictService.getNameByCode(addressBook.getCityCode()));
+        addressBook.setDistrictName(iDistrictService.getNameByCode(addressBook.getDistrictCode()));
+
+        addressBookService.updateById(addressBook);
+        return R.success("修改成功");
+    }
+
+    //删除地址
+    @DeleteMapping
+    public R<String> delete(Long ids) {
+        addressBookService.removeById(ids);
+        int count = addressBookService.count();
+        //只剩一个就设为默认
+        if (count == 1) {
+            LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+            AddressBook one = addressBookService.getOne(queryWrapper);
+            one.setIsDefault(1);
+            addressBookService.updateById(one);
+        }
+        return R.success("删除成功");
+    }
+
+
     /**
      * 新增
      */
@@ -33,7 +69,17 @@ public class AddressBookController extends BaseController{
         Long operationId = (Long) session.getAttribute("userId");
         BaseContext.setCurrentId(operationId);
         addressBook.setUserId(BaseContext.getCurrentId());
-        log.info("addressBook:{}", addressBook);
+
+        int count = addressBookService.count();
+        if (count == 0) {
+            addressBook.setIsDefault(1);
+        }
+
+        //省市区信息
+        addressBook.setProvinceName(iDistrictService.getNameByCode(addressBook.getProvinceCode()));
+        addressBook.setCityName(iDistrictService.getNameByCode(addressBook.getCityCode()));
+        addressBook.setDistrictName(iDistrictService.getNameByCode(addressBook.getDistrictCode()));
+
         addressBookService.save(addressBook);
         return R.success(addressBook);
     }

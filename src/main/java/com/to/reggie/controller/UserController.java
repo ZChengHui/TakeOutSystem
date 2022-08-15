@@ -98,4 +98,15 @@ public class UserController extends BaseController{
         throw new PasswordNotMatchException("用户名或验证码错误，登录失败");
     }
 
+    /**
+     * 登出
+     * @param session
+     * @return
+     */
+    @PostMapping("/logout")
+    public R<String> logout(HttpSession session) {
+        session.removeAttribute("userId");
+        return R.success("登出成功");
+    }
+
 }

@@ -1,3 +1,11 @@
+//通过父节点获取子行政区
+function getByParentApi(parent) {
+    return $axios({
+        'url': `/district/${parent}`,
+        'method': 'get',
+    })
+}
+
 //获取所有地址
 function addressListApi() {
     return $axios({
@@ -33,11 +41,11 @@ function  updateAddressApi(data){
 }
 
 //删除地址
-function deleteAddressApi(params) {
+function deleteAddressApi(ids) {
     return $axios({
         'url': '/addressBook',
         'method': 'delete',
-        params
+        ids
     })
 }
 

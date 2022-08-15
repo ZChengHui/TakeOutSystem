@@ -1,8 +1,11 @@
 package com.to.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.to.reggie.dto.OrdersDto;
 import com.to.reggie.entity.*;
 import com.to.reggie.mapper.IAddressBookMapper;
 import com.to.reggie.mapper.IOrderMapper;
@@ -104,5 +107,42 @@ public class OrderServiceImpl extends ServiceImpl<IOrderMapper, Orders> implemen
 
         //清空购物车
         iShoppingCartService.remove(queryWrapper);
+    }
+
+    /**
+     * 分页查用户订单
+     * @return
+     */
+    @Override
+    public IPage<OrdersDto> getUserOrdersPage(int page, int pageSize,Long userId) {
+
+        //查order
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Orders::getUserId, userId);
+        queryWrapper.orderByDesc(Orders::getOrderTime);
+
+        IPage<Orders> orderPage = new Page<>(page, pageSize);
+        IPage<OrdersDto> ordersDtoIPage = new Page<>(page, pageSize);
+        this.page(orderPage, queryWrapper);
+
+        List<Orders> orderList = orderPage.getRecords();
+        List<OrdersDto> ordersDtoList = orderList.stream().map((item) -> {
+            OrdersDto ordersDto = new OrdersDto();
+            BeanUtils.copyProperties(item, ordersDto);
+
+            LambdaQueryWrapper<OrderDetail> queryWrapper1 = new LambdaQueryWrapper<>();
+            queryWrapper1.eq(OrderDetail::getOrderId, ordersDto.getId());
+
+            List<OrderDetail> list = iOrderDetailService.list(queryWrapper1);
+
+            ordersDto.setOrderDetails(list);
+
+            return ordersDto;
+        }).collect(Collectors.toList());
+        //查order_detail
+
+        ordersDtoIPage.setRecords(ordersDtoList);
+
+        return ordersDtoIPage;
     }
 }
