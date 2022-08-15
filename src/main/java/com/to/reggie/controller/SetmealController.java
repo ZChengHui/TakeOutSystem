@@ -194,7 +194,7 @@ public class SetmealController extends BaseController{
         log.info(setmealDto.toString());
 
         //清理所有缓存数据
-        Set keys = redisTemplate.keys("setmeal_*");//通配符
+        Set keys = redisTemplate.keys("setmeal_" + setmealDto.getCategoryId() + "_1");//通配符
         redisTemplate.delete(keys);//按规则清理
 
         return R.success("修改菜品成功");
