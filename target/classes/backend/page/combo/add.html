@@ -460,7 +460,7 @@
         methods: {
           async init() {
             querySetmealById(this.id).then((res) => {
-              if (String(res.code) === '1') {
+              if (res.code == 200) {
                 this.ruleForm = res.data
                 this.ruleForm.status = res.data.status === '1'
                 this.ruleForm.price = res.data.price / 100
@@ -675,7 +675,7 @@
           // 关键词收搜菜品列表分类
           getDishForName (name) {
             queryDishList({name}).then(res => {
-              if (res.code === 1) {
+              if (res.code === 200) {
                 let newArr = res.data
                 newArr.forEach((n) => {
                   n.dishId = n.id

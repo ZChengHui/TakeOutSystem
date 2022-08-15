@@ -15,11 +15,13 @@ import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,6 +38,9 @@ public class SetmealController extends BaseController{
     @Autowired
     private ISetmealDishService iSetmealDishService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 按套餐分类id查询套餐列表 DTO改进版
      * 联动加载
@@ -44,7 +49,19 @@ public class SetmealController extends BaseController{
      */
     @GetMapping("/list")
     public R<List<SetmealDto>> getDishByCategoryId(Setmeal setmeal) {
+        List<SetmealDto> setmealDtoList = null;
 
+        //设置套餐关键字
+        String key = "setmeal_" + setmeal.getCategoryId() + "_" + setmeal.getStatus();
+
+        setmealDtoList = (List<SetmealDto>) redisTemplate.opsForValue().get(key);
+
+        //如果存在，直接返回，无需查询数据库
+        if (setmealDtoList != null) {
+            return R.success(setmealDtoList);
+        }
+
+        //如果不存在，查询数据库，并添加缓存
         //查询条件
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Setmeal::getCategoryId, setmeal.getCategoryId());
@@ -54,7 +71,7 @@ public class SetmealController extends BaseController{
         List<Setmeal> list = iSetmealService.list(queryWrapper);
 
         //用流遍历
-        List<SetmealDto> setmealDtoList = list.stream().map((item) -> {
+        setmealDtoList = list.stream().map((item) -> {
             SetmealDto setmealDto = new SetmealDto();
 
             BeanUtils.copyProperties(item, setmealDto);
@@ -75,6 +92,9 @@ public class SetmealController extends BaseController{
 
             return setmealDto;
         }).collect(Collectors.toList());
+
+        //加入redis
+        redisTemplate.opsForValue().set(key, setmealDtoList);
 
         return R.success(setmealDtoList);
     }
@@ -150,5 +170,34 @@ public class SetmealController extends BaseController{
         return R.success(iPage);
     }
 
+    /**
+     * 查询套餐信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public R<SetmealDto> getSetmealById(@PathVariable Long id) {
+        SetmealDto setmealDto = iSetmealService.getSetmealWithDish(id);
+        return R.success(setmealDto);
+    }
+
+    /**
+     * 修改套餐信息
+     * @param setmealDto
+     * @param session
+     * @return
+     */
+    @PutMapping
+    public R<String> update(@RequestBody SetmealDto setmealDto, HttpSession session) {
+        Long operationId = (Long) session.getAttribute("employeeId");
+        iSetmealService.updateWithDish(setmealDto, operationId);
+        log.info(setmealDto.toString());
+
+        //清理所有缓存数据
+        Set keys = redisTemplate.keys("setmeal_*");//通配符
+        redisTemplate.delete(keys);//按规则清理
+
+        return R.success("修改菜品成功");
+    }
 
 }

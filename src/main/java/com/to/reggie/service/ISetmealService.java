@@ -22,4 +22,10 @@ public interface ISetmealService extends IService<Setmeal> {
     //批量删除 多表操作
     void deleteBach(List<Long> ids);
 
+    //修改套餐信息
+    void updateWithDish(SetmealDto setmealDto, Long operationId);
+
+    //查询套餐信息
+    SetmealDto getSetmealWithDish(Long id);
+
 }

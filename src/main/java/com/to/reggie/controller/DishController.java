@@ -16,10 +16,13 @@ import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +42,9 @@ public class DishController extends BaseController{
     @Autowired
     private ICategoryService iCategoryService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 按菜品分类id查询菜品列表 DTO版改进
      * 联动加载
@@ -47,7 +53,19 @@ public class DishController extends BaseController{
      */
     @GetMapping("/list")
     public R<List<DishDto>> getDishByCategoryId(Dish dish) {
+        List<DishDto> dishDtoList = null;
 
+        //从redis中获取缓存数据  dish_8374234782_1
+        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
+
+        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+
+        //如果存在，直接返回，无需查询数据库
+        if (dishDtoList != null) {
+            return R.success(dishDtoList);
+        }
+
+        //如果不存在，查询数据库，并添加缓存
         //查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Dish::getCategoryId, dish.getCategoryId());
@@ -57,7 +75,7 @@ public class DishController extends BaseController{
 
         List<Dish> list = iDishService.list(queryWrapper);
 
-        List<DishDto> dishDtoList = list.stream().map((item) -> {
+        dishDtoList = list.stream().map((item) -> {
             DishDto dishDto = new DishDto();
             BeanUtils.copyProperties(item, dishDto);
 
@@ -76,6 +94,9 @@ public class DishController extends BaseController{
             
             return dishDto;
         }).collect(Collectors.toList());
+
+        //加入redis缓存
+        redisTemplate.opsForValue().set(key, dishDtoList, 60, TimeUnit.MINUTES);
 
         return R.success(dishDtoList);
     }
@@ -151,6 +172,12 @@ public class DishController extends BaseController{
         Long operationId = (Long) session.getAttribute("employeeId");
         iDishService.updateWithFlavor(dishDto, operationId);
         log.info(dishDto.toString());
+
+        //清理所有缓存数据
+        //Set keys = redisTemplate.keys("dish_*");//通配符
+        Set keys = redisTemplate.keys("dish_" + dishDto.getCategoryId() + "_1");
+        redisTemplate.delete(keys);//按规则清理
+
         return R.success("修改菜品成功");
     }
 

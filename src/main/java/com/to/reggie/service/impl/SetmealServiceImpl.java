@@ -40,6 +40,9 @@ public class SetmealServiceImpl extends ServiceImpl<ISetmealMapper, Setmeal> imp
     @Autowired
     private ICategoryService iCategoryService;
 
+    @Autowired
+    private ISetmealMapper iSetmealMapper;
+
     /**
      * 新增套餐
      * 多表操作
@@ -173,6 +176,64 @@ public class SetmealServiceImpl extends ServiceImpl<ISetmealMapper, Setmeal> imp
         LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(SetmealDish::getSetmealId, ids);
         iSetmealDishService.remove(queryWrapper);
+    }
+
+    /**
+     * 修改套餐信息
+     * 多表操作
+     * @param setmealDto
+     * @param operationId
+     */
+    @Override
+    public void updateWithDish(SetmealDto setmealDto, Long operationId) {
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Setmeal::getName, setmealDto.getName());
+        Setmeal temp = iSetmealMapper.selectOne(queryWrapper);
+        Setmeal temp_ = iSetmealMapper.selectById(setmealDto.getId());
+        if (temp != null && !temp_.getId().equals(temp.getId())) {
+            throw new SetmealDuplicationException("套餐名重复");
+        }
+
+        BaseContext.setCurrentId(operationId);
+
+        this.updateById(setmealDto);
+
+        //删除原来包含的菜品
+        LambdaQueryWrapper<SetmealDish> queryWrapper_ = new LambdaQueryWrapper<>();
+        queryWrapper_.eq(SetmealDish::getSetmealId, setmealDto.getId());
+        iSetmealDishService.remove(queryWrapper_);
+
+        //添加新的包含菜品
+        Long setmealId = setmealDto.getId();
+        List<SetmealDish> dishes = setmealDto.getSetmealDishes();
+        for (SetmealDish setmealDish : dishes) {
+            setmealDish.setSetmealId(setmealId);
+        }
+        iSetmealDishService.saveBatch(dishes);
+    }
+
+    /**
+     * 查询套餐信息
+     * 多表操作
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealDto getSetmealWithDish(Long id) {
+        //查setmeal
+        SetmealDto setmealDto = new SetmealDto();
+        Setmeal setmeal = iSetmealMapper.selectById(id);
+
+        //查setmealdish
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealDish::getSetmealId, id);
+        List<SetmealDish> list = iSetmealDishService.list(queryWrapper);
+
+        //组合赋值
+        BeanUtils.copyProperties(setmeal, setmealDto);
+        setmealDto.setSetmealDishes(list);
+
+        return setmealDto;
     }
 }
 

@@ -11,6 +11,7 @@ import com.to.reggie.service.ex.PhoneNotFoundException;
 import com.to.reggie.service.ex.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -25,7 +27,10 @@ import java.util.Map;
 public class UserController extends BaseController{
 
     @Autowired
-    public IUserService iUserService;
+    private IUserService iUserService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 发送验证码
@@ -46,7 +51,11 @@ public class UserController extends BaseController{
         //发送短信
         //SMSUtils.sendMessage("阿里云短信测试","SMS_154950909", phone, code);
         //保存验证码
-        session.setAttribute("code", code);
+        //session.setAttribute("code", code);
+
+        //redis缓存优化
+        redisTemplate.opsForValue().set("code", code, 5, TimeUnit.MINUTES);
+
         return R.success("手机验证码已发送");
     }
 
@@ -60,7 +69,12 @@ public class UserController extends BaseController{
         //获取手机号和验证码
         String phone = map.get("phone").toString();
         String code = map.get("code").toString();
-        Object codeInSession = session.getAttribute("code");
+
+        //Object codeInSession = session.getAttribute("code");
+
+        //从redis缓存中获取验证码
+        Object codeInSession = redisTemplate.opsForValue().get("code");
+
         //与session中数据比较
         if (codeInSession != null && codeInSession.equals(code)) {
             //比对成功
@@ -75,6 +89,10 @@ public class UserController extends BaseController{
                 iUserService.save(temp);
             }
             session.setAttribute("userId", temp.getId());
+
+            //登录成功删除缓存
+            redisTemplate.delete("code");
+
             return R.success(temp);
         }
         throw new PasswordNotMatchException("用户名或验证码错误，登录失败");
