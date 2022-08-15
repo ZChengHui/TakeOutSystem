@@ -9,11 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="take_out" />
         <module name="redis" />
+        <module name="store" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="store" options="-parameters" />
       <module name="take_out" options="-parameters" />
     </option>
   </component>
