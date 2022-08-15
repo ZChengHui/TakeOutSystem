@@ -553,25 +553,34 @@
         }
       },
       flavorClick(flavor,item){
+        console.log("1****   "+item)
+
         flavor.dishFlavor = item
+        console.log("1****   "+flavor.dishFlavor)
+        console.log("1****   "+flavor)
         //强制刷新dialog的dom
-        this.dialogFlavor.show = false
-        this.dialogFlavor.show = true
+        //this.dialogFlavor.show = false
+        //this.dialogFlavor.show = true
       },
       //选择规格加入购物车
       dialogFlavorAddCart(){
+
         const dialogFlavor = this.dialogFlavor
+        console.log("2****   "+dialogFlavor)
         let flag = true
         let dishFlavor = []
         dialogFlavor.flavors.forEach(item=>{
           if(item.dishFlavor){
             dishFlavor.push(item.dishFlavor)
+            console.log("3****   "+item.dishFlavor)
+
           }else{
             flag = false
-            Notify({ type: 'warning', message: '请选择'+ item.name });
+            this.$notify({ type: 'warning', message: '请选择'+ item.name });
           }
         })
         if(flag){
+          console.log("4****   "+dishFlavor)
           this.addCart({
             price:dialogFlavor.price,
             dishFlavor:dishFlavor.join(","),
