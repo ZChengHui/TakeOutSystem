@@ -15,6 +15,8 @@ import com.to.reggie.service.ex.SetmealCanNotUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -194,7 +196,7 @@ public class SetmealController extends BaseController{
         log.info(setmealDto.toString());
 
         //清理所有缓存数据
-        Set keys = redisTemplate.keys("setmeal_" + setmealDto.getCategoryId() + "_1");//通配符
+        Set keys = redisTemplate.keys("setmeal_*");//通配符
         redisTemplate.delete(keys);//按规则清理
 
         return R.success("修改菜品成功");

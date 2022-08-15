@@ -3,12 +3,13 @@ package com.to.reggie.common;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
 @NoArgsConstructor
-public class R<T> {
+public class R<T> implements Serializable {//实现序列化接口 配合缓存功能
 
     private Integer code; //状态码
 
