@@ -175,6 +175,10 @@
                             this.$notify({ type:'warning', message:'请输入联系人'});
                             return 
                         }
+                        if(!form.sex){
+                            this.$notify({ type:'warning', message:'请选择性别'});
+                            return
+                        }
                         if(!form.phone){
                             this.$notify({ type:'warning', message:'请输入手机号'});
                             return 
