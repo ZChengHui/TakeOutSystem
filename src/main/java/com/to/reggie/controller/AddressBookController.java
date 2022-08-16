@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ import java.util.List;
 public class AddressBookController extends BaseController{
 
     @Autowired
-    private IAddressBookService addressBookService;
+    private IAddressBookService iAddressBookService;
 
     @Autowired
     private IDistrictService iDistrictService;
@@ -41,21 +42,21 @@ public class AddressBookController extends BaseController{
         addressBook.setCityName(iDistrictService.getNameByCode(addressBook.getCityCode()));
         addressBook.setDistrictName(iDistrictService.getNameByCode(addressBook.getDistrictCode()));
 
-        addressBookService.updateById(addressBook);
+        iAddressBookService.updateById(addressBook);
         return R.success("修改成功");
     }
 
     //删除地址
     @DeleteMapping
     public R<String> delete(Long ids) {
-        addressBookService.removeById(ids);
-        int count = addressBookService.count();
+        iAddressBookService.removeById(ids);
+        int count = iAddressBookService.count();
         //只剩一个就设为默认
         if (count == 1) {
             LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
-            AddressBook one = addressBookService.getOne(queryWrapper);
+            AddressBook one = iAddressBookService.getOne(queryWrapper);
             one.setIsDefault(1);
-            addressBookService.updateById(one);
+            iAddressBookService.updateById(one);
         }
         return R.success("删除成功");
     }
@@ -70,7 +71,7 @@ public class AddressBookController extends BaseController{
         BaseContext.setCurrentId(operationId);
         addressBook.setUserId(BaseContext.getCurrentId());
 
-        int count = addressBookService.count();
+        int count = iAddressBookService.count();
         if (count == 0) {
             addressBook.setIsDefault(1);
         }
@@ -80,7 +81,7 @@ public class AddressBookController extends BaseController{
         addressBook.setCityName(iDistrictService.getNameByCode(addressBook.getCityCode()));
         addressBook.setDistrictName(iDistrictService.getNameByCode(addressBook.getDistrictCode()));
 
-        addressBookService.save(addressBook);
+        iAddressBookService.save(addressBook);
         return R.success(addressBook);
     }
 
@@ -96,11 +97,11 @@ public class AddressBookController extends BaseController{
         wrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
         wrapper.set(AddressBook::getIsDefault, 0);
         //SQL:update address_book set is_default = 0 where user_id = ?
-        addressBookService.update(wrapper);
+        iAddressBookService.update(wrapper);
 
         addressBook.setIsDefault(1);
         //SQL:update address_book set is_default = 1 where id = ?
-        addressBookService.updateById(addressBook);
+        iAddressBookService.updateById(addressBook);
         return R.success(addressBook);
     }
 
@@ -109,7 +110,7 @@ public class AddressBookController extends BaseController{
      */
     @GetMapping("/{id}")
     public R get(@PathVariable Long id) {
-        AddressBook addressBook = addressBookService.getById(id);
+        AddressBook addressBook = iAddressBookService.getById(id);
         if (addressBook != null) {
             return R.success(addressBook);
         } else {
@@ -129,7 +130,7 @@ public class AddressBookController extends BaseController{
         queryWrapper.eq(AddressBook::getIsDefault, 1);
 
         //SQL:select * from address_book where user_id = ? and is_default = 1
-        AddressBook addressBook = addressBookService.getOne(queryWrapper);
+        AddressBook addressBook = iAddressBookService.getOne(queryWrapper);
 
         if (null == addressBook) {
             throw new AddressBookNotFoundException("地址不存在");
@@ -154,6 +155,6 @@ public class AddressBookController extends BaseController{
         queryWrapper.orderByDesc(AddressBook::getUpdateTime);
 
         //SQL:select * from address_book where user_id = ? order by update_time desc
-        return R.success(addressBookService.list(queryWrapper));
+        return R.success(iAddressBookService.list(queryWrapper));
     }
 }
