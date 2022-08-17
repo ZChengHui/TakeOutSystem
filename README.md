@@ -20,12 +20,12 @@
 ![](./ScreenImg/firewall.png)
 ### 主从数据库配置
 #### 主数据库状态
-  ![](./ScreenImg/.-status.png)
+![](./ScreenImg/.-status.png)
 #### 设置从数据库状态
-  ![](./ScreenImg/slave-code.png)
+![](./ScreenImg/slave-code.png)
 #### 查看从数据库
-  ![](./ScreenImg/slave-status-1.png)
-  ![](./ScreenImg/slave-staus-2.png)
+![](./ScreenImg/slave-status-1.png)
+![](./ScreenImg/slave-staus-2.png)
 ### Redis设置
 #### Redis启动
 ![](./ScreenImg/redis-start.png)
