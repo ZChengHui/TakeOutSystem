@@ -42,7 +42,7 @@
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/login.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/login-4.png)
 * 手机验证码
-![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/sms.png)
+![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/sms.jpg)
 * 菜品展示
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-index.png)
 * 点餐
