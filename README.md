@@ -9,83 +9,83 @@
   
 
 ### 虚拟机ip地址  
-![1号虚拟机配置](master/ScreenImg/vm1_ip.png)
-![2号虚拟机配置](master/ScreenImg/vm2_ip.png)
+![1号虚拟机配置](./ScreenImg/vm1_ip.png)
+![2号虚拟机配置](./ScreenImg/vm2_ip.png)
 ### 设置虚拟机静态ip  
-![](master/ScreenImg/vm1-ens33.png)
-![](master/ScreenImg/vm2-ens33.png)
+![](./ScreenImg/vm1-ens33.png)
+![](./ScreenImg/vm2-ens33.png)
 ### 虚拟机环境  
-![](master/ScreenImg/env-cfg.png)
+![](./ScreenImg/env-cfg.png)
 ### 开放防火墙端口  
-![](master/ScreenImg/firewall.png)
+![](./ScreenImg/firewall.png)
 ### 主从数据库配置
 #### 主数据库状态
-  ![](master/ScreenImg/master-status.png)
+  ![](./ScreenImg/.-status.png)
 #### 设置从数据库状态
-  ![](master/ScreenImg/slave-code.png)
+  ![](./ScreenImg/slave-code.png)
 #### 查看从数据库
-  ![](master/ScreenImg/slave-status-1.png)
-  ![](master/ScreenImg/slave-staus-2.png)
+  ![](./ScreenImg/slave-status-1.png)
+  ![](./ScreenImg/slave-staus-2.png)
 ### Redis设置
 #### Redis启动
-![](master/ScreenImg/redis-start.png)
+![](./ScreenImg/redis-start.png)
 #### Redis图形界面工具
-![](master/ScreenImg/another-redis.png)
+![](./ScreenImg/another-redis.png)
 ## 项目配置
 ### YML文件
-![](master/ScreenImg/pom-0.png)
-![](master/ScreenImg/pom-1.png)
-![](master/ScreenImg/pom-2.png)
+![](./ScreenImg/pom-0.png)
+![](./ScreenImg/pom-1.png)
+![](./ScreenImg/pom-2.png)
 ### 项目执行
 ## 移动端
 ### 用户登录
-![](master/ScreenImg/login.png)
-![](master/ScreenImg/login-4.png)
+![](./ScreenImg/login.png)
+![](./ScreenImg/login-4.png)
 ### 手机验证码
-![](master/ScreenImg/sms.jpg)
+![](./ScreenImg/sms.jpg)
 ### 菜品展示
-![](master/ScreenImg/front-index.png)
+![](./ScreenImg/front-index.png)
 ### 点餐
-![](master/ScreenImg/front-check.png)
+![](./ScreenImg/front-check.png)
 ### 购物车
-![](master/ScreenImg/front-cart.png)
+![](./ScreenImg/front-cart.png)
 ### 下单
-![](master/ScreenImg/front-addorder.png)
-![](master/ScreenImg/front-addorder-2.png)
+![](./ScreenImg/front-addorder.png)
+![](./ScreenImg/front-addorder-2.png)
 ### 地址列表
-![](master/ScreenImg/front-address.png)
+![](./ScreenImg/front-address.png)
 ### 编辑地址
-![](master/ScreenImg/edit-address.png)
+![](./ScreenImg/edit-address.png)
 ### 下单成功
-![](master/ScreenImg/pay-success.png)
+![](./ScreenImg/pay-success.png)
 ### 查看订单
-![](master/ScreenImg/see-orderlist.png)
+![](./ScreenImg/see-orderlist.png)
 ### 用户信息
-![](master/ScreenImg/user.png)
-![](master/ScreenImg/user-2.png)
+![](./ScreenImg/user.png)
+![](./ScreenImg/user-2.png)
 
 ## 管理端
 ### 登录页面
-![](master/ScreenImg/backend-login.png)
-![](master/ScreenImg/backend-login-2.png)
+![](./ScreenImg/backend-login.png)
+![](./ScreenImg/backend-login-2.png)
 ### 餐饮分类
-![](master/ScreenImg/backend-category-1.png)
-![](master/ScreenImg/backend-category-2.png)
+![](./ScreenImg/backend-category-1.png)
+![](./ScreenImg/backend-category-2.png)
 ### 菜品管理
-![](master/ScreenImg/backend-dish-1.png)
-![](master/ScreenImg/backend-dish-2.png)
+![](./ScreenImg/backend-dish-1.png)
+![](./ScreenImg/backend-dish-2.png)
 ### 批量操作
-![](master/ScreenImg/backend-dish-mulops.png)
+![](./ScreenImg/backend-dish-mulops.png)
 ### 套餐管理
-![](master/ScreenImg/backend-setmeal-1.png)
-![](master/ScreenImg/backend-setmeal-2.png)
+![](./ScreenImg/backend-setmeal-1.png)
+![](./ScreenImg/backend-setmeal-2.png)
 ### 订单管理
-![](master/ScreenImg/backend-order-1.png)
-![](master/ScreenImg/backend-order-2.png)
+![](./ScreenImg/backend-order-1.png)
+![](./ScreenImg/backend-order-2.png)
 ### 员工管理
-![](master/ScreenImg/backend-emp-1.png)
-![](master/ScreenImg/backend-emp-2.png)
-![](master/ScreenImg/backend-emp-3.png)
+![](./ScreenImg/backend-emp-1.png)
+![](./ScreenImg/backend-emp-2.png)
+![](./ScreenImg/backend-emp-3.png)
 
 # 阶段总结
 ## 管理端
