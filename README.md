@@ -25,7 +25,7 @@
 ![](./ScreenImg/slave-code.png)
 #### 查看从数据库
 ![](./ScreenImg/slave-status-1.png)
-![](./ScreenImg/slave-staus-2.png)
+![](./ScreenImg/slave-status-2.png)
 ### Redis设置
 #### Redis启动
 ![](./ScreenImg/redis-start.png)
