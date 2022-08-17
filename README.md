@@ -5,84 +5,84 @@
 解决了一些业务逻辑判断的隐藏BUG。
 # 演示
 ## 虚拟机配置
-* 准备两台虚拟机，可以先配置一台主虚拟机，安装完编程环境后，克隆生成另一台虚拟机
+### 准备两台虚拟机，可以先配置一台主虚拟机，安装完编程环境后，克隆生成另一台虚拟机
   
 
-* 虚拟机ip地址  
+### 虚拟机ip地址  
 ![1号虚拟机配置](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/vm1_ip.png)
 ![2号虚拟机配置](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/vm2_ip.png)
-* 设置虚拟机静态ip  
+### 设置虚拟机静态ip  
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/vm1-ens33.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/vm2-ens33.png)
-* 虚拟机环境  
+### 虚拟机环境  
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/env-cfg.png)
-* 开放防火墙端口  
+### 开放防火墙端口  
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/firewall.png)
-* 主从数据库配置
-  * 主数据库状态
+### 主从数据库配置
+#### 主数据库状态
   ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/master-status.png)
-  * 设置从数据库状态
+#### 设置从数据库状态
   ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/slave-code.png)
-  * 查看从数据库
+#### 查看从数据库
   ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/slave-status-1.png)
   ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/slave-staus-2.png)
-* Redis设置
-  * Redis启动
-  ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/redis-start.png)
-  * Redis图形界面工具
-  ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/another-redis.png)
+### Redis设置
+#### Redis启动
+    ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/redis-start.png)
+#### Redis图形界面工具
+    ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/another-redis.png)
 ## 项目配置
-* YML文件
+### YML文件
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/pom-0.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/pom-1.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/pom-2.png)
-## 项目执行
-### 移动端
-* 用户登录
+### 项目执行
+## 移动端
+### 用户登录
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/login.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/login-4.png)
-* 手机验证码
+### 手机验证码
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/sms.jpg)
-* 菜品展示
+### 菜品展示
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-index.png)
-* 点餐
+### 点餐
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-check.png)
-* 购物车
+### 购物车
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-cart.png)
-* 下单
+### 下单
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-addorder.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-addorder-2.png)
-* 地址列表
+### 地址列表
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/front-address.png)
-* 编辑地址
+### 编辑地址
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/edit-address.png)
-* 下单成功
+### 下单成功
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/pay-success.png)
-* 查看订单
+### 查看订单
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/see-orderlist.png)
-* 用户信息
+### 用户信息
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/user.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/user-2.png)
 
-### 管理端
-* 登录页面
+## 管理端
+### 登录页面
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-login.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-login-2.png)
-* 餐饮分类
+### 餐饮分类
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-category-1.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-category-2.png)
-* 菜品管理
+### 菜品管理
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-dish-1.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-dish-2.png)
-* 批量操作
+### 批量操作
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-dish-mulops.png)
-* 套餐管理
+### 套餐管理
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-setmeal-1.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-setmeal-2.png)
-* 订单管理
+### 订单管理
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-order-1.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-order-2.png)
-* 员工管理
+### 员工管理
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-emp-1.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-emp-2.png)
 ![](https://github.com/ZChengHui/TakeOutSystem/blob/master/ScreenImg/backend-emp-3.png)
